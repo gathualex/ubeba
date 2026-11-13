@@ -1,0 +1,2 @@
+export type Product = { id: string; name: string; slug: string; description: string | null; price: number | null; currency: string; price_on_request: boolean; status: 'available'|'reserved'|'sold'; featured: boolean; category_id: string|null; view_count?:number; categories?: {name:string;slug:string}|null; product_images?: {storage_path:string;alt_text:string|null;sort_order:number}[] }
+export function imageUrl(path?: string | null) { return path ? `/api/images/${path.split('/').map(encodeURIComponent).join('/')}` : null }

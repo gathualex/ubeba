@@ -1,0 +1,3 @@
+import {test,expect} from '@playwright/test'
+const viewports=[[320,568],[375,667],[390,844],[430,932],[768,1024],[1024,768],[1280,720],[1440,900],[1920,1080],[2560,1440]] as const
+for(const [width,height] of viewports){test(`homepage and shop fit ${width}×${height}`,async({page})=>{await page.setViewportSize({width,height});for(const path of ['/','/shop']){await page.goto(path);await expect(page.locator('header')).toBeVisible();await expect(page.locator('main')).toBeVisible();const dimensions=await page.evaluate(()=>({width:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth}));expect(dimensions.scroll,`${path} overflows at ${width}×${height}`).toBeLessThanOrEqual(dimensions.width+1)}})}

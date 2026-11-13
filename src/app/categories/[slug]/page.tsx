@@ -1,0 +1,8 @@
+import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
+import { supabaseServer } from '@/lib/supabase/server'
+import { listProducts } from '@/lib/catalog'
+import { ProductCard } from '@/components/product-card'
+import Link from 'next/link'
+export async function generateMetadata({params}:{params:Promise<{slug:string}>}):Promise<Metadata>{const {slug}=await params;const db=await supabaseServer();const {data}=db?await db.from('categories').select('name,description').eq('slug',slug).maybeSingle():{data:null};return {title:data?.name??'Category',description:data?.description??`Browse ${data?.name??'category'} products at Ubeba.`,alternates:{canonical:`/categories/${slug}`}}}
+export default async function Category({params}:{params:Promise<{slug:string}>}){const {slug}=await params;const db=await supabaseServer();if(!db) return <section className="shell page-head"><h1>Catalog setup required</h1></section>;const {data:category}=await db.from('categories').select('*').eq('slug',slug).maybeSingle();if(!category)notFound();const {products}=await listProducts({category:category.id,limit:100});const items=products;return <section className="shell catalog-results"><div className="breadcrumbs"><Link href="/shop">Shop</Link> / {category.name}</div><div className="page-head"><span className="eyebrow">Category</span><h1>{category.name}</h1><p>{category.description}</p></div>{items.length?<div className="product-grid">{items.map(p=><ProductCard key={p.id} product={p}/>)}</div>:<div className="empty-state"><h3>Nothing here just yet</h3><p>Check back soon for new finds.</p></div>}</section>}

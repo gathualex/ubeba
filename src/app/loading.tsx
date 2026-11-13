@@ -1,0 +1,1 @@
+export default function Loading(){return <section className="shell catalog-results" aria-live="polite" aria-busy="true"><span className="eyebrow">Just a moment</span><h1 className="loading-title">Finding good things…</h1><div className="product-grid">{[1,2,3,4].map(i=><div className="loading-card" key={i}><div/><span/><span/></div>)}</div></section>}

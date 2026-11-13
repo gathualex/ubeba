@@ -1,0 +1,3 @@
+import type { MetadataRoute } from 'next'
+import { supabaseServer } from '@/lib/supabase/server'
+export default async function sitemap():Promise<MetadataRoute.Sitemap>{const base=process.env.NEXT_PUBLIC_SITE_URL||'http://localhost:3000';const db=await supabaseServer();const products=db?await db.from('products').select('slug,updated_at').eq('published',true):{data:[]};const categories=db?await db.from('categories').select('slug,updated_at'):{data:[]};return [{url:base,lastModified:new Date()}, {url:`${base}/shop`,lastModified:new Date()},...(categories.data??[]).map(c=>({url:`${base}/categories/${c.slug}`,lastModified:new Date(c.updated_at||Date.now())})),...(products.data??[]).map(p=>({url:`${base}/product/${p.slug}`,lastModified:new Date(p.updated_at||Date.now())}))]}

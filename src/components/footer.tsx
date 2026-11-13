@@ -1,0 +1,3 @@
+import Link from 'next/link'
+import { whatsappUrl } from '@/lib/whatsapp'
+export async function Footer(){const wa=await whatsappUrl();return <footer className="footer"><div className="shell footer-inner"><div><Link href="/" className="brand footer-brand"><span className="brand-mark">U</span><span>ubeba<small>USA finds, made closer.</small></span></Link><p>Thoughtful finds from the USA, brought closer to home.</p></div><div className="footer-links"><Link href="/shop">Browse products</Link><Link href="/admin/login">Admin</Link>{wa&&<a href={wa} target="_blank" rel="noopener noreferrer">WhatsApp</a>}</div><small>© {new Date().getFullYear()} Ubeba</small></div></footer>}
