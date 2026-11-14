@@ -23,7 +23,6 @@ Fill in `.env.local` as described below before connecting Supabase. The public c
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase publishable key; safe for browser use with RLS enabled. The legacy `NEXT_PUBLIC_SUPABASE_ANON_KEY` is also accepted. |
 | `SUPABASE_SERVICE_ROLE_KEY` | Optional server-only key for signing private product image URLs. Never prefix it with `NEXT_PUBLIC_` or expose it to client code. |
-| `WHATSAPP_PHONE_NUMBER` | Business phone in international digits only, e.g. `2547…`; leave empty to hide inquiry links |
 | `NEXT_PUBLIC_SITE_URL` | Canonical public URL, no trailing slash; use the deployed domain in production |
 
 Never expose a service role or secret API key to the browser. Admin database operations use the signed-in user's session and database RLS; private image signing may use the server-only service role key.
@@ -36,7 +35,8 @@ Never expose a service role or secret API key to the browser. Admin database ope
 4. Grant the initial administrator role through the trusted SQL Editor only: `insert into public.admin_users(user_id) values ('USER-UUID');`. Do not expose role assignment to the app. Additional admins must also be granted by a trusted operator.
 5. Configure Auth site URL as the deployed domain and add local/deployed redirect URLs in Supabase Auth settings.
 6. Add the environment variables to `.env.local` locally and to Vercel project settings. Set `NEXT_PUBLIC_SITE_URL` to the production HTTPS domain and keep `SUPABASE_SERVICE_ROLE_KEY` server-only.
-7. Add categories in `/admin/categories`, then products in `/admin/products/new`. Image uploads accept JPEG, PNG, WebP, or AVIF, up to 8 MB each. The storage bucket is private; public images are served with short lived signed URLs only when their product is published.
+7. Set the customer WhatsApp number in `/admin/settings`; the contact is stored in the `site_settings` database table and is not read from an environment variable.
+8. Add categories in `/admin/categories`, then products in `/admin/products/new`. Image uploads accept JPEG, PNG, WebP, or AVIF, up to 8 MB each. The storage bucket is private; public images are served with short lived signed URLs only when their product is published.
 
 RLS grants visitors read access only to published products and their images. Admin status is checked from `admin_users` on the server and by the database policies. Category deletion is blocked while products reference the category. Product deletion removes its storage images before deleting the database row. If storage cleanup fails, deletion stops and reports an error.
 

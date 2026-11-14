@@ -95,4 +95,18 @@ export async function deleteProductImage(form:FormData){const db=await admin();c
 export async function setImageOrder(form:FormData){const db=await admin();const id=String(form.get('id')),productId=String(form.get('product_id')),sort=Number(form.get('sort_order'));if(!Number.isInteger(sort)||sort<0)throw new Error('Image order must be a positive whole number.');const {error}=await db.from('product_images').update({sort_order:sort}).eq('id',id).eq('product_id',productId);if(error)throw new Error(error.message);revalidatePath(`/admin/products/${productId}/edit`);revalidatePath(`/product`)}
 export async function saveCategory(form:FormData){const db=await admin();const id=String(form.get('id')||'');const payload={name:String(form.get('name')||'').trim(),slug:String(form.get('slug')||'').trim(),description:String(form.get('description')||'').trim(),sort_order:Number(form.get('sort_order')||0)};const schema=z.object({name:z.string().min(2).max(80),slug:z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),description:z.string().max(800),sort_order:z.number().int().min(0)});const parsed=schema.safeParse(payload);if(!parsed.success)throw new Error(parsed.error.issues[0]?.message||'Check category details.');const result=id?await db.from('categories').update(parsed.data).eq('id',id):await db.from('categories').insert(parsed.data);if(result.error)throw new Error(result.error.message);revalidatePath('/');redirect('/admin/categories')}
 export async function deleteCategory(form:FormData){const db=await admin();const id=String(form.get('id'));const {count}=await db.from('products').select('id',{count:'exact',head:true}).eq('category_id',id);if(count)throw new Error('Move or remove products in this category before deleting it.');const {error}=await db.from('categories').delete().eq('id',id);if(error)throw new Error(error.message);revalidatePath('/');redirect('/admin/categories')}
-export async function saveWhatsAppPhone(form:FormData){const db=await admin();const phone=String(form.get('whatsapp_phone')||'').trim();const normalized=phone.replace(/\D/g,'');if(!normalized)throw new Error('Enter a valid WhatsApp phone number.');process.env.WHATSAPP_PHONE_NUMBER = phone;const {error}=await db.from('site_settings').upsert({id:'primary',whatsapp_phone:phone},{onConflict:'id'});if(error)throw new Error(error.message);revalidatePath('/');revalidatePath('/shop');redirect('/admin/settings?saved=1')}
+export async function saveWhatsAppPhone(form:FormData){
+  const db=await admin()
+  const phone=String(form.get('whatsapp_phone')||'').trim()
+  const normalized=phone.replace(/\D/g,'')
+  if(normalized.length<8||normalized.length>15)redirect('/admin/settings?error=phone')
+  const {error}=await db.from('site_settings').upsert({id:'primary',whatsapp_phone:phone},{onConflict:'id'})
+  if(error){
+    console.error('Could not save WhatsApp contact:',error.message)
+    if(error.code==='PGRST205'||error.code==='42P01')redirect('/admin/settings?error=migration')
+    redirect('/admin/settings?error=save')
+  }
+  revalidatePath('/')
+  revalidatePath('/shop')
+  redirect('/admin/settings?saved=1')
+}
