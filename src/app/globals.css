@@ -142,6 +142,45 @@ nav a:hover,
   font-weight: 700;
 }
 
+.theme-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--ink);
+}
+
+.theme-control-icon {
+  color: var(--accent-strong);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.theme-control select {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 0.74rem;
+  cursor: pointer;
+}
+
+.theme-control select:focus-visible {
+  outline-offset: 1px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
 .hero {
   display: grid;
   grid-template-columns: 1.12fr 0.88fr;
@@ -1938,3 +1977,129 @@ nav a:hover,
     scroll-behavior: auto !important;
   }
 }
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --ink: #edf2ed;
+  --muted: #a9b8b0;
+  --paper: #151d1a;
+  --panel: rgba(35, 47, 42, 0.92);
+  --line: rgba(210, 224, 214, 0.15);
+  --accent: #dda873;
+  --accent-strong: #e5b77f;
+  --sage: #263a33;
+  --gold: #d4a261;
+  --shadow: 0 20px 55px rgba(0, 0, 0, 0.25);
+}
+
+html[data-theme="dark"] body {
+  background:
+    radial-gradient(circle at top left, rgba(214, 162, 97, 0.08), transparent 28%),
+    linear-gradient(180deg, #19221e 0%, #131a17 100%);
+  color: var(--ink);
+}
+
+html[data-theme="dark"] .site-header {
+  background: rgba(22, 31, 27, 0.88);
+}
+
+html[data-theme="dark"] .site-nav {
+  color: var(--muted);
+}
+
+html[data-theme="dark"] .hero-search,
+html[data-theme="dark"] .button-outline,
+html[data-theme="dark"] .product-card,
+html[data-theme="dark"] .status,
+html[data-theme="dark"] .category-links a,
+html[data-theme="dark"] .how-steps > div,
+html[data-theme="dark"] .empty-state,
+html[data-theme="dark"] .loading-card,
+html[data-theme="dark"] .admin-menu,
+html[data-theme="dark"] .admin-panel,
+html[data-theme="dark"] .login-box,
+html[data-theme="dark"] .admin-stats > div,
+html[data-theme="dark"] .gallery-admin-item,
+html[data-theme="dark"] .upload-previews > div,
+html[data-theme="dark"] .catalog-controls {
+  border-color: var(--line);
+  background: var(--panel);
+  color: var(--ink);
+}
+
+html[data-theme="dark"] .hero-search input,
+html[data-theme="dark"] .catalog-controls input,
+html[data-theme="dark"] .catalog-controls select,
+html[data-theme="dark"] .catalog-controls .catalog-checkbox,
+html[data-theme="dark"] .admin-form input:not([type="checkbox"]),
+html[data-theme="dark"] .admin-form select,
+html[data-theme="dark"] .admin-form textarea,
+html[data-theme="dark"] .login-box input,
+html[data-theme="dark"] .gallery-admin-item input {
+  border-color: var(--line);
+  background: #1c2823;
+  color: var(--ink);
+}
+
+html[data-theme="dark"] .hero-search input::placeholder {
+  color: var(--muted);
+}
+
+html[data-theme="dark"] .admin-form > label:has(input[type="checkbox"]) {
+  border-color: var(--line);
+  background: var(--panel);
+  color: var(--ink);
+}
+
+html[data-theme="dark"] .detail-status {
+  color: #bce2c7;
+}
+
+html[data-theme="dark"] .image-placeholder {
+  background: linear-gradient(135deg, #34423a, #26332d);
+  color: var(--ink);
+}
+
+html[data-theme="dark"] .loading-card div {
+  background: linear-gradient(135deg, #34423a, #26332d);
+}
+
+html[data-theme="dark"] .loading-card span {
+  background: #34423a;
+}
+
+html[data-theme="dark"] .category-strip,
+html[data-theme="dark"] .category-hero {
+  border-color: var(--line);
+  background: linear-gradient(120deg, #202d27, #293a31 58%, #304338);
+}
+
+html[data-theme="dark"] .how {
+  background: linear-gradient(180deg, rgba(28, 39, 34, 0.55), rgba(20, 29, 25, 0.88));
+}
+
+html[data-theme="dark"] .footer {
+  background: rgba(22, 31, 27, 0.94);
+}
+
+html[data-theme="dark"] .edit-product-heading {
+  background: rgba(25, 35, 30, 0.97);
+}
+
+html[data-theme="dark"] .button-light {
+  background: #edf2ed;
+  color: #1d2f2c;
+}
+
+html[data-theme="dark"] .setup-notice {
+  border-color: rgba(221, 168, 115, 0.2);
+  background: rgba(221, 168, 115, 0.08);
+  color: var(--accent-strong);
+}
+
+html[data-theme="dark"] .admin-menu a,
+html[data-theme="dark"] .admin-menu button {
+  background: rgba(237, 242, 237, 0.08);
+  color: var(--ink);
+}
+
