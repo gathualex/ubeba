@@ -4298,3 +4298,35 @@ html[data-theme="dark"] .product-create-page .bulk-product-remove {
   }
 }
 
+@media (max-width: 640px) {
+  .footer-location {
+    gap: 0;
+  }
+
+  .footer-location > .eyebrow,
+  .footer-location b {
+    display: none;
+  }
+
+  .footer-location > a {
+    width: max-content;
+    max-width: 100%;
+    gap: 0.45rem;
+    padding: 0.4rem 0.58rem;
+    border-radius: 10px;
+  }
+
+  .footer-location svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .footer-location small {
+    font-size: 0.66rem;
+  }
+
+  .footer-location i {
+    font-size: 0.72rem;
+  }
+}
+
