@@ -13,8 +13,8 @@ type ShopParams = { q?: string; category?: string; sort?: string; page?: string;
 
 export default async function Shop({ searchParams }: { searchParams: Promise<ShopParams> }) {
   const params = await searchParams
-  const page = Math.max(1, Number(params.page) || 1)
-  const size = 12
+  const page = Math.max(1, Math.floor(Number(params.page) || 1))
+  const size = 20
   const priceOnRequest = params.price_on_request === '1'
   const sort = priceOnRequest ? 'newest' : params.sort || 'newest'
   const { products, categories, configured, count } = await listProducts({

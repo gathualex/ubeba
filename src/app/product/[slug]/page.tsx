@@ -8,4 +8,52 @@ import { ProductGallery } from '@/components/product-gallery'
 import { ProductViewTracker } from '@/components/product-view-tracker'
 import { publicSiteOrigin } from '@/lib/site-url'
 export async function generateMetadata({params}:{params:Promise<{slug:string}>}):Promise<Metadata>{const {slug}=await params;const db=await supabaseServer();const {data}=db?await db.from('products').select('name,description,product_images(storage_path)').eq('slug',slug).eq('published',true).maybeSingle():{data:null};if(!data)return {title:'Product unavailable'};const img=imageUrl(data.product_images?.[0]?.storage_path);const origin=await publicSiteOrigin();const productUrl=origin?`${origin}/product/${slug}`:undefined;const image=origin&&img?new URL(img,origin).toString():img;return {title:data.name,description:data.description?.slice(0,155)??`Ask Ubeba about ${data.name}.`,alternates:{canonical:productUrl??`/product/${slug}`},openGraph:{title:data.name,description:data.description?.slice(0,155)??undefined,url:productUrl,images:image?[image]:[]}}}
-export default async function ProductPage({params}:{params:Promise<{slug:string}>}){const {slug}=await params;const db=await supabaseServer();if(!db) return <section className="shell page-head"><h1>Catalog setup required</h1></section>;const {data,error}=await db.from('products').select('*,categories(name,slug),product_images(storage_path,alt_text,sort_order)').eq('slug',slug).eq('published',true).maybeSingle();if(error||!data)notFound();const p=data as Product;const images=(p.product_images??[]).sort((a,b)=>a.sort_order-b.sort_order);const wa=await whatsappUrl(p,`/product/${p.slug}`);return <><ProductViewTracker slug={p.slug}/><div className="shell breadcrumbs"><Link href="/shop">Shop</Link>{p.categories&&<> / <Link href={`/categories/${p.categories.slug}`}>{p.categories.name}</Link></>} / {p.name}</div><section className="shell detail"><ProductGallery product={p} images={images}/><div className="detail-info"><span className="eyebrow">{p.categories?.name??'USA import'}</span><h1>{p.name}</h1><span className="detail-status">{p.status}</span><p className="detail-price"><strong>{p.price_on_request||p.price==null?'Price on request':`KES ${Number(p.price).toLocaleString()}`}</strong></p><p className="detail-desc">{p.description||'Ask us for more details about this product.'}</p>{wa?<a className="button detail-wa" href={wa} target="_blank" rel="noopener noreferrer">Ask about this product on WhatsApp ↗</a>:<p>WhatsApp inquiries are temporarily unavailable.</p>}<p><Link className="text-link" href="/shop">← Back to the catalog</Link></p></div></section></>}
+export default async function ProductPage({params}:{params:Promise<{slug:string}>}) {
+  const {slug}=await params
+  const db=await supabaseServer()
+  if(!db) return <section className="shell page-head"><h1>Catalog setup required</h1></section>
+
+  const {data,error}=await db.from('products').select('*,categories(name,slug),product_images(storage_path,alt_text,sort_order)').eq('slug',slug).eq('published',true).maybeSingle()
+  if(error||!data)notFound()
+
+  const product=data as Product
+  const images=(product.product_images??[]).slice().sort((a,b)=>a.sort_order-b.sort_order)
+  const whatsapp=await whatsappUrl(product,`/product/${product.slug}`)
+
+  return <>
+    <ProductViewTracker slug={product.slug}/>
+    <section className="shell product-detail-page">
+      <nav className="breadcrumbs product-breadcrumbs" aria-label="Breadcrumb">
+        <Link href="/shop">Shop</Link>
+        {product.categories&&<><span aria-hidden="true">/</span><Link href={`/categories/${product.categories.slug}`}>{product.categories.name}</Link></>}
+        <span aria-hidden="true">/</span><span aria-current="page">{product.name}</span>
+      </nav>
+      <div className="product-detail-layout">
+        <ProductGallery product={product} images={images}/>
+        <article className="product-detail-copy">
+          <div className="product-detail-heading">
+            <span className="eyebrow">{product.categories?.name??'USA find'}</span>
+            <h1>{product.name}</h1>
+            <span className={`detail-status detail-status-${product.status}`}><i/> {product.status}</span>
+          </div>
+
+          <div className="product-price-panel">
+            <span className="eyebrow">Ubeba price</span>
+            <strong>{product.price_on_request||product.price==null?'Price on request':`KES ${Number(product.price).toLocaleString()}`}</strong>
+          </div>
+
+          <div className="product-description-panel">
+            <span className="eyebrow">About this find</span>
+            <p>{product.description||'Ask us for more details about this product.'}</p>
+          </div>
+
+          <div className="product-detail-actions">
+            {whatsapp?<a className="button detail-wa" href={whatsapp} target="_blank" rel="noopener noreferrer">Ask about this product <span aria-hidden="true">↗</span></a>:<p className="product-contact-unavailable">WhatsApp inquiries are temporarily unavailable.</p>}
+            <p>Message us to confirm availability and get more details.</p>
+          </div>
+          <Link className="product-back-link" href="/shop"><span aria-hidden="true">←</span> Back to all finds</Link>
+        </article>
+      </div>
+    </section>
+  </>
+}

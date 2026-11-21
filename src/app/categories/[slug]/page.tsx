@@ -5,7 +5,7 @@ import { supabaseServer } from '@/lib/supabase/server'
 import { listProducts } from '@/lib/catalog'
 import { ProductCard } from '@/components/product-card'
 
-type CategoryParams = { params: Promise<{ slug: string }> }
+type CategoryParams = { params: Promise<{ slug: string }>; searchParams?: Promise<{ page?: string }> }
 
 export async function generateMetadata({ params }: CategoryParams): Promise<Metadata> {
   const { slug } = await params
@@ -21,8 +21,11 @@ export async function generateMetadata({ params }: CategoryParams): Promise<Meta
   }
 }
 
-export default async function Category({ params }: CategoryParams) {
+export default async function Category({ params, searchParams }: CategoryParams) {
   const { slug } = await params
+  const query = searchParams ? await searchParams : {}
+  const page = Math.max(1, Math.floor(Number(query.page) || 1))
+  const pageSize = 20
   const db = await supabaseServer()
 
   if (!db) {
@@ -32,7 +35,8 @@ export default async function Category({ params }: CategoryParams) {
   const { data: category } = await db.from('categories').select('*').eq('slug', slug).maybeSingle()
   if (!category) notFound()
 
-  const { products, count, categories } = await listProducts({ category: category.id, limit: 100 })
+  const { products, count, categories } = await listProducts({ category: category.id, limit: pageSize, offset: (page - 1) * pageSize })
+  const pages = Math.max(1, Math.ceil(count / pageSize))
 
   return <section className="shell category-page">
     <nav className="breadcrumbs" aria-label="Breadcrumb">
@@ -75,6 +79,11 @@ export default async function Category({ params }: CategoryParams) {
         <p>There aren’t any products in this collection just yet. Explore the full catalog in the meantime.</p>
         <Link className="button button-dark" href="/shop">Browse all products</Link>
       </div>}
+      {pages > 1 && <nav className="pagination" aria-label="Category product pages">
+        {page > 1 && <Link href={`/categories/${slug}?page=${page - 1}`}>← Previous</Link>}
+        <span>Page {page} of {pages}</span>
+        {page < pages && <Link href={`/categories/${slug}?page=${page + 1}`}>Next →</Link>}
+      </nav>}
     </div>
   </section>
 }

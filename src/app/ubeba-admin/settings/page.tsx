@@ -6,9 +6,9 @@ import { saveWhatsAppPhone } from '../actions'
 export default async function AdminSettingsPage({ searchParams }: { searchParams: Promise<{ saved?: string; error?: string }> }) {
   const params = await searchParams
   const { db, user, isAdmin } = await getAdminContext()
-  if (!db) return <div className="admin-panel"><h1>Connect your catalog</h1><p>Add Supabase credentials to enable administration.</p><Link href="/admin/login">Admin sign in</Link></div>
-  if (!user) redirect('/admin/login')
-  if (!isAdmin) redirect('/admin/login?error=unauthorized')
+  if (!db) return <div className="admin-panel"><h1>Connect your catalog</h1><p>Add Supabase credentials to enable administration.</p><Link href="/ubeba-admin/login">Admin sign in</Link></div>
+  if (!user) redirect('/ubeba-admin/login')
+  if (!isAdmin) redirect('/ubeba-admin/login?error=unauthorized')
 
   const site = db ? await db.from('site_settings').select('whatsapp_phone').maybeSingle() : { data: null }
   const value = site.data?.whatsapp_phone ?? ''

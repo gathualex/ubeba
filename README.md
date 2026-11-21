@@ -35,8 +35,8 @@ Never expose a service role or secret API key to the browser. Admin database ope
 4. Grant the initial administrator role through the trusted SQL Editor only: `insert into public.admin_users(user_id) values ('USER-UUID');`. Do not expose role assignment to the app. Additional admins must also be granted by a trusted operator.
 5. Configure Auth site URL as the deployed domain and add local/deployed redirect URLs in Supabase Auth settings.
 6. Add the environment variables to `.env.local` locally and to Vercel project settings. Set `NEXT_PUBLIC_SITE_URL` to the production HTTPS domain and keep `SUPABASE_SERVICE_ROLE_KEY` server-only.
-7. Set the customer WhatsApp number in `/admin/settings`; the contact is stored in the `site_settings` database table and is not read from an environment variable.
-8. Add categories in `/admin/categories`, then products in `/admin/products/new`. Image uploads accept JPEG, PNG, WebP, or AVIF, up to 8 MB each. The storage bucket is private; public images are served with short lived signed URLs only when their product is published.
+7. Set the customer WhatsApp number in `/ubeba-admin/settings`; the contact is stored in the `site_settings` database table and is not read from an environment variable.
+8. Add categories in `/ubeba-admin/categories`, then products in `/ubeba-admin/products/new`. Image uploads accept JPEG, PNG, WebP, or AVIF, up to 8 MB each. The storage bucket is private; public images are served with short lived signed URLs only when their product is published.
 
 RLS grants visitors read access only to published products and their images. Admin status is checked from `admin_users` on the server and by the database policies. Category deletion is blocked while products reference the category. Product deletion removes its storage images before deleting the database row. If storage cleanup fails, deletion stops and reports an error.
 
@@ -62,9 +62,9 @@ Budget for Supabase database compute/storage/egress and any paid backup tier, Ve
 
 ## Current scope and operational notes
 
-- `/`, `/shop`, `/categories/[slug]`, and `/product/[slug]` are public pages; `/admin/login`, `/admin`, `/admin/products`, `/admin/products/new`, `/admin/products/[id]/edit`, and `/admin/categories` are administrator routes.
+- `/`, `/shop`, `/categories/[slug]`, and `/product/[slug]` are public pages; `/ubeba-admin/login`, `/ubeba-admin`, `/ubeba-admin/products`, `/ubeba-admin/products/new`, `/ubeba-admin/products/bulk`, `/ubeba-admin/products/[id]/edit`, `/ubeba-admin/categories`, and `/ubeba-admin/settings` are administrator routes.
 - Product metadata, sitemap, and product detail queries exclude unpublished products. WhatsApp links include product, displayed price, and canonical product URL when configured.
 - Product/category text search and catalog sorting use server-side Supabase queries; public catalog reads are bounded.
 - Sample inventory is not seeded. Empty catalog is supported. No addresses, delivery timelines, shipping fees, testimonials, or guarantees are asserted.
-- Admin product image uploads append images. Existing-image reordering and removal are not yet exposed in the dashboard; remove image rows and storage objects together through a trusted workflow until that UI is added.
+- Admins can crop and choose the primary card image while uploading, then reorder or remove existing gallery images from the product editor.
 - For production, use Supabase's database backups/PITR according to plan, rotate admin passwords, keep dependencies updated, and review authentication and storage logs.

@@ -17,6 +17,8 @@ function createSuffix() {
 
 function createSlugPrefix(value: string) {
   return value
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .trim()
     .replace(/[^a-z0-9]+/g, '-')
@@ -29,22 +31,21 @@ export function ProductNameSlugFields({ nameField, slugField }: ProductNameSlugF
   const [name, setName] = useState('')
   const [slug, setSlug] = useState('')
   const [suffix, setSuffix] = useState('')
-  const [autoSlug, setAutoSlug] = useState(true)
   const nameId = `${nameField}-input`
   const slugId = `${slugField}-input`
   const slugHelpId = `${slugField}-help`
 
   function updateName(value: string) {
     setName(value)
-    if (!autoSlug) return
     const randomSuffix = suffix || createSuffix()
     if (!suffix) setSuffix(randomSuffix)
-    const prefix = createSlugPrefix(value)
+    const prefix = createSlugPrefix(value) || (value.trim() ? 'product' : '')
     setSlug(prefix ? `${prefix}-${randomSuffix}` : '')
   }
 
   return <>
     <label htmlFor={nameId}>Product name<input id={nameId} name={nameField} value={name} onChange={event => updateName(event.target.value)} required minLength={2} maxLength={120}/></label>
-    <label htmlFor={slugId}>URL slug<input id={slugId} name={slugField} value={slug} onChange={event => { setSlug(event.target.value); setAutoSlug(false) }} required pattern="[a-z0-9]+(-[a-z0-9]+)*" aria-describedby={slugHelpId}/><small id={slugHelpId} className="product-slug-help">Generated from the product name with a unique 6-character suffix. You can edit it.</small></label>
+    <input type="hidden" id={slugId} name={slugField} value={slug} aria-describedby={slugHelpId}/>
+    <span id={slugHelpId} className="visually-hidden">The product URL is generated from its name.</span>
   </>
 }

@@ -54,7 +54,7 @@ export function BulkProductForm({ categories }: { categories: Category[] }) {
           <label><input type="checkbox" name={field('price_on_request')}/> Price on request</label>
           <label><input type="checkbox" name={field('featured')}/> Featured</label>
           <label><input type="checkbox" name={field('published')}/> Publish now</label>
-          <label>Product images<ImageUpload name={field('images')}/></label>
+          <div className="admin-form-field"><span>Product images</span><ImageUpload name={field('images')} primaryName={field('primary_image_index')}/></div>
         </div>
       </fieldset>
     })}
